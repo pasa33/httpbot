@@ -21,6 +21,9 @@ const (
 )
 
 func (bot *HttpBot) AddDevice(id string, headers map[deviceHeader]string) {
+	bot.deviceMu.Lock()
+	defer bot.deviceMu.Unlock()
+
 	id = strings.ToLower(id)
 	bot.devices[id] = headers
 	if len(bot.devices) == 1 {
@@ -29,32 +32,32 @@ func (bot *HttpBot) AddDevice(id string, headers map[deviceHeader]string) {
 }
 
 func (bot *HttpBot) EditDevice(id string, headers map[deviceHeader]string) {
-	id = strings.ToLower(id)
+	bot.deviceMu.Lock()
+	defer bot.deviceMu.Unlock()
 
+	id = strings.ToLower(id)
 	if _, ok := bot.devices[id]; !ok {
 		return
 	}
-
 	for k, v := range headers {
 		bot.devices[id][k] = v
 	}
 }
 
 func (bot *HttpBot) UseDevice(id string) {
+	bot.deviceMu.RLock()
+	defer bot.deviceMu.RUnlock()
+
 	id = strings.ToLower(id)
 	if _, ok := bot.devices[id]; ok {
 		bot.useDeviceId = id
 	}
 }
 
-func (bot *HttpBot) getInUseDevice() map[deviceHeader]string {
-	if val, ok := bot.devices[bot.useDeviceId]; ok {
-		return val
-	}
-	return map[deviceHeader]string{}
-}
-
 func (bot *HttpBot) getInUseDeviceValue(key string) string {
+	bot.deviceMu.RLock()
+	defer bot.deviceMu.RUnlock()
+
 	if val, ok := bot.devices[bot.useDeviceId]; ok {
 		key = strings.ToLower(key)
 		return val[deviceHeader(key)]

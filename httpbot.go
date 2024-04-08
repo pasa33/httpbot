@@ -1,6 +1,8 @@
 package httpbot
 
 import (
+	"sync"
+
 	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/pasa33/cookie_header"
@@ -14,6 +16,7 @@ type HttpBot struct {
 
 	proxy       string
 	devices     map[string]map[deviceHeader]string
+	deviceMu    sync.RWMutex
 	useDeviceId string
 }
 
