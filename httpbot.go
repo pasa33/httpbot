@@ -15,7 +15,7 @@ type HttpBot struct {
 	CookieHeader  cookie_header.CookieHeader
 
 	proxy       string
-	devices     map[string]map[deviceHeader]string
+	devices     map[string]map[DeviceHeader]string
 	deviceMu    sync.RWMutex
 	useDeviceId string
 }

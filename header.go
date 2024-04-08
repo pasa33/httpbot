@@ -15,10 +15,6 @@ const (
 	Auto_Header = "!#!AutoHeader!#!"
 )
 
-var (
-	justOrder = []string{""}
-)
-
 func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 	hds := make(map[string][]string)
 	for _, v := range headers {
