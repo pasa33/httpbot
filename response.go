@@ -1,11 +1,13 @@
 package httpbot
 
 import (
-	"encoding/json"
 	"io"
 
 	"github.com/PuerkitoBio/goquery"
+	jsoniter "github.com/json-iterator/go"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func Body2Json(r io.Reader, v interface{}) error {
 	bbody, err := io.ReadAll(r)

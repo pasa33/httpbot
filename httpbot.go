@@ -56,7 +56,7 @@ func (bot *HttpBot) InitProxy(proxyUrl string) {
 }
 
 // call when client already inuse
-func (bot *HttpBot) SetProxy(proxyUrl string) {
+func (bot *HttpBot) SwitchProxy(proxyUrl string) {
 	bot.proxy = proxyUrl
 	bot.client.SetProxy(bot.proxy)
 }
