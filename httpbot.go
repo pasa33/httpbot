@@ -13,24 +13,18 @@ type HttpBot struct {
 	clientOptions []tls_client.HttpClientOption
 	client        tls_client.HttpClient
 	CookieHeader  cookie_header.CookieHeader
-
-	proxy       string
-	devices     map[string]map[DeviceHeader]string
-	deviceMu    sync.RWMutex
-	useDeviceId string
+	proxy         string
+	devices       map[string]map[DeviceHeader]string
+	deviceMu      sync.RWMutex
+	useDeviceId   string
 }
 
-func (bot *HttpBot) InitClient() error {
-
+func (bot *HttpBot) InitClient() (err error) {
 	options := append(bot.clientOptions, tls_client.WithProxyUrl(bot.proxy))
 	options = append(options, tls_client.WithClientProfile(bot.clientHello))
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
-	if err != nil {
-		return err
-	}
-	bot.client = client
-	return nil
+	bot.client, err = tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	return
 }
 
 func (bot *HttpBot) SetClientHello(ch profiles.ClientProfile) {
