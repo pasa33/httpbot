@@ -25,6 +25,11 @@ func (bot *HttpBot) AddDevice(id string, headers map[DeviceHeader]string) {
 	defer bot.deviceMu.Unlock()
 
 	id = strings.ToLower(id)
+
+	if bot.devices == nil {
+		bot.devices = map[string]map[DeviceHeader]string{}
+	}
+
 	bot.devices[id] = headers
 	if len(bot.devices) == 1 {
 		bot.useDeviceId = id

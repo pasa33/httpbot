@@ -14,7 +14,7 @@ func Body2Json(r io.Reader, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	if json.Unmarshal(bbody, &v) != nil {
+	if json.Unmarshal(bbody, v) != nil {
 		return err
 	}
 	return nil
