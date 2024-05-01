@@ -54,3 +54,8 @@ func (bot *HttpBot) SwitchProxy(proxyUrl string) {
 	bot.proxy = proxyUrl
 	bot.client.SetProxy(bot.proxy)
 }
+
+// call when client already inuse
+func (bot *HttpBot) InitCookieHeader() {
+	bot.CookieHeader = cookie_header.New()
+}

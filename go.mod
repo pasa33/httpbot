@@ -7,7 +7,7 @@ require (
 	github.com/bogdanfinn/fhttp v0.5.27
 	github.com/bogdanfinn/tls-client v1.7.2
 	github.com/json-iterator/go v1.1.12
-	github.com/pasa33/cookie_header v0.0.3
+	github.com/pasa33/cookie_header v0.0.4
 )
 
 require (
