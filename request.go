@@ -46,3 +46,8 @@ func (bot *HttpBot) MakeRequestCustomOrder(method, url string, headers []Header,
 
 	return bot.client.Do(req)
 }
+
+func EncodeJSON(j map[string]interface{}) []byte {
+	jsonData, _ := json.Marshal(j)
+	return jsonData
+}
