@@ -20,6 +20,17 @@ func Body2Json(r io.Reader, v interface{}) error {
 	return nil
 }
 
+func Body2JsonAndString(r io.Reader, v interface{}) (string, error) {
+	bbody, err := io.ReadAll(r)
+	if err != nil {
+		return string(bbody), err
+	}
+	if json.Unmarshal(bbody, v) != nil {
+		return string(bbody), err
+	}
+	return string(bbody), nil
+}
+
 func Body2String(r io.Reader) string {
 	bbody, err := io.ReadAll(r)
 	if err != nil {
