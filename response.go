@@ -14,7 +14,7 @@ func Body2Json(r io.Reader, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	if json.Unmarshal(bbody, v) != nil {
+	if err = json.Unmarshal(bbody, v); err != nil {
 		return err
 	}
 	return nil
@@ -25,7 +25,7 @@ func Body2JsonAndString(r io.Reader, v interface{}) (string, error) {
 	if err != nil {
 		return string(bbody), err
 	}
-	if json.Unmarshal(bbody, v) != nil {
+	if err = json.Unmarshal(bbody, v); err != nil {
 		return string(bbody), err
 	}
 	return string(bbody), nil
@@ -37,6 +37,13 @@ func Body2String(r io.Reader) string {
 		return ""
 	}
 	return string(bbody)
+}
+
+func String2Json(s string, v interface{}) error {
+	if err := json.Unmarshal([]byte(s), v); err != nil {
+		return err
+	}
+	return nil
 }
 
 func Body2Html(r io.Reader) (*goquery.Document, error) {
