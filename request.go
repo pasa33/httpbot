@@ -2,7 +2,9 @@ package httpbot
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"strings"
 
 	http "github.com/bogdanfinn/fhttp"
 )
@@ -50,4 +52,18 @@ func (bot *HttpBot) MakeRequestCustomOrder(method, url string, headers []Header,
 func EncodeJSON(j map[string]interface{}) []byte {
 	jsonData, _ := json.Marshal(j)
 	return jsonData
+}
+
+func EncodeURLForm(j map[string]interface{}) []byte {
+	if len(j) == 0 {
+		return []byte{}
+	}
+	var buf strings.Builder
+	for k, v := range j {
+		buf.WriteByte('&')
+		buf.WriteString(k)
+		buf.WriteByte('=')
+		buf.WriteString(fmt.Sprint(v))
+	}
+	return []byte(buf.String()[1:])
 }

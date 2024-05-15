@@ -22,7 +22,7 @@ func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 		hds[http.HeaderOrderKey] = append(hds[http.HeaderOrderKey], strings.ToLower(v.Key))
 		//add header value
 		if v.Value == Auto_Header {
-			if isOnlyOrder(v.Value) {
+			if isOnlyOrder(v.Key) {
 				continue
 			}
 			hds[v.Key] = []string{bot.getInUseDeviceValue(v.Key)}
