@@ -35,7 +35,7 @@ func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 
 func isOnlyOrder(s string) bool {
 	switch strings.ToLower(s) {
-	case "content-lenght":
+	case "content-length":
 		return true
 	}
 	return false
