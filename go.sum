@@ -40,6 +40,8 @@ github.com/pasa33/cookie_header v0.0.4 h1:cA5RWKnTtVrIymattoHnMrPom2jHilGK3bvoCd
 github.com/pasa33/cookie_header v0.0.4/go.mod h1:z2hkEL+VS/Ui3jVSnqB6Etq9yAEDv9iL7/qimZY0rlo=
 github.com/pasa33/cookie_header v0.0.5 h1:GX0+6IUdZJnvRV4DvIqbX07eYwmMyDbtk0JMBd0v4bE=
 github.com/pasa33/cookie_header v0.0.5/go.mod h1:z2hkEL+VS/Ui3jVSnqB6Etq9yAEDv9iL7/qimZY0rlo=
+github.com/pasa33/cookie_header v0.0.6 h1:2HkddGr5YzEAT+UKH0nWg0qQhshlYT2q3OzoF03K5m8=
+github.com/pasa33/cookie_header v0.0.6/go.mod h1:z2hkEL+VS/Ui3jVSnqB6Etq9yAEDv9iL7/qimZY0rlo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/quic-go/quic-go v0.37.4 h1:ke8B73yMCWGq9MfrCCAw0Uzdm7GaViC3i39dsIdDlH4=
