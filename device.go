@@ -69,3 +69,13 @@ func (bot *HttpBot) getInUseDeviceValue(key string) string {
 	}
 	return ""
 }
+
+func (bot *HttpBot) GetInUseUA() string {
+	bot.deviceMu.RLock()
+	defer bot.deviceMu.RUnlock()
+
+	if val, ok := bot.devices[bot.useDeviceId]; ok {
+		return val[UserAgent]
+	}
+	return ""
+}
