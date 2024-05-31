@@ -1,6 +1,7 @@
 package httpbot
 
 import (
+	"bytes"
 	"io"
 
 	"github.com/PuerkitoBio/goquery"
@@ -48,4 +49,13 @@ func String2Json(s string, v interface{}) error {
 
 func Body2Html(r io.Reader) (*goquery.Document, error) {
 	return goquery.NewDocumentFromReader(r)
+}
+
+func Body2HtmlAndString(r io.Reader) (*goquery.Document, string, error) {
+	bbody, err := io.ReadAll(r)
+	if err != nil {
+		return nil, string(bbody), err
+	}
+	html, err := goquery.NewDocumentFromReader(bytes.NewReader(bbody))
+	return html, string(bbody), err
 }
