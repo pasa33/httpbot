@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	http "github.com/bogdanfinn/fhttp"
@@ -21,8 +22,11 @@ func (bot *HttpBot) MakeRequest(method, url string, headers []Header, payload ..
 	}
 
 	req.Header = bot.generateHeaders(headers)
-
-	return bot.client.Do(req)
+	res, err := bot.client.Do(req)
+	if err != nil {
+		log.Printf("%+v", err)
+	}
+	return res, err
 }
 
 func (bot *HttpBot) MakeRequestCustomOrder(method, url string, headers []Header, hOrder, pOrder []string, payload ...[]byte) (red *http.Response, err error) {
