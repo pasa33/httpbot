@@ -26,6 +26,7 @@ func (bot *HttpBot) MakeRequest(method, url string, headers []Header, payload ..
 	if err != nil {
 		log.Printf("%+v", err)
 	}
+
 	return res, err
 }
 
@@ -70,4 +71,8 @@ func EncodeURLForm(j map[string]interface{}) []byte {
 		buf.WriteString(fmt.Sprint(v))
 	}
 	return []byte(buf.String()[1:])
+}
+
+func DecompressBody(res *http.Response) io.ReadCloser {
+	return http.DecompressBody(res)
 }
