@@ -7,8 +7,9 @@ import (
 )
 
 type Header struct {
-	Key   string
-	Value string
+	Key         string
+	Value       string
+	SkipIfEmpty bool
 }
 
 const (
@@ -18,6 +19,9 @@ const (
 func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 	hds := make(map[string][]string)
 	for _, v := range headers {
+		if v.SkipIfEmpty && v.Value == "" {
+			continue
+		}
 		//append to header-order
 		hds[http.HeaderOrderKey] = append(hds[http.HeaderOrderKey], strings.ToLower(v.Key))
 		//add header value
