@@ -9,14 +9,15 @@ import (
 )
 
 type HttpBot struct {
-	clientHello   profiles.ClientProfile
-	clientOptions []tls_client.HttpClientOption
-	client        tls_client.HttpClient
-	CookieHeader  cookie_header.CookieHeader
-	proxy         string
-	devices       map[string]map[DeviceHeader]string
-	deviceMu      sync.RWMutex
-	useDeviceId   string
+	clientHello      profiles.ClientProfile
+	clientOptions    []tls_client.HttpClientOption
+	client           tls_client.HttpClient
+	CookieHeader     cookie_header.CookieHeader
+	proxy            string
+	devices          map[string]map[DeviceHeader]string
+	deviceMu         sync.RWMutex
+	useDeviceId      string
+	skipEmptyHeaders bool
 }
 
 func (bot *HttpBot) InitClient() (err error) {
@@ -58,4 +59,8 @@ func (bot *HttpBot) SwitchProxy(proxyUrl string) {
 // call when client already inuse
 func (bot *HttpBot) InitCookieHeader() {
 	bot.CookieHeader = cookie_header.New()
+}
+
+func (bot *HttpBot) SetSkipEmptyHeaders(skip bool) {
+	bot.skipEmptyHeaders = skip
 }
