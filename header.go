@@ -9,7 +9,6 @@ import (
 type Header struct {
 	Key   string
 	Value string
-	//SkipIfEmpty bool
 }
 
 const (
