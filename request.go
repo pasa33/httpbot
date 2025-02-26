@@ -26,18 +26,8 @@ func (bot *HttpBot) PrepareRequest(method, url string, headers []Header, payload
 	return req, err
 }
 
-func (bot *HttpBot) MakeRequest(method, url string, headers []Header, payload ...[]byte) (red *http.Response, err error) {
+func (bot *HttpBot) SendRequest(req *http.Request) (red *http.Response, err error) {
 
-	var body io.Reader = nil
-	if len(payload) > 0 && len(payload[0]) > 0 {
-		body = bytes.NewBuffer(payload[0])
-	}
-	req, err := http.NewRequest(method, url, body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header = bot.generateHeaders(headers)
 	res, err := bot.client.Do(req)
 	if err != nil {
 		err, parsed := parseRequestError(err)
@@ -47,6 +37,15 @@ func (bot *HttpBot) MakeRequest(method, url string, headers []Header, payload ..
 	}
 
 	return res, err
+}
+
+func (bot *HttpBot) MakeRequest(method, url string, headers []Header, payload ...[]byte) (red *http.Response, err error) {
+
+	req, err := bot.PrepareRequest(method, url, headers, payload...)
+	if err != nil {
+		return nil, err
+	}
+	return bot.SendRequest(req)
 }
 
 func (bot *HttpBot) MakeRequestCustomOrder(method, url string, headers []Header, hOrder, pOrder []string, payload ...[]byte) (red *http.Response, err error) {
@@ -96,12 +95,12 @@ func (bot *HttpBot) MakeReturnRequest(method, url string, headers []Header, payl
 	return req, res, err
 }
 
-func EncodeJSON(j map[string]interface{}) []byte {
+func EncodeJSON(j map[string]any) []byte {
 	jsonData, _ := json.Marshal(j)
 	return jsonData
 }
 
-func EncodeURLForm(j map[string]interface{}) []byte {
+func EncodeURLForm(j map[string]any) []byte {
 	if len(j) == 0 {
 		return []byte{}
 	}
