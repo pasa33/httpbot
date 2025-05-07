@@ -18,6 +18,7 @@ type HttpBot struct {
 	deviceMu         sync.RWMutex
 	useDeviceId      string
 	skipEmptyHeaders bool
+	isDebug          bool
 }
 
 func (bot *HttpBot) InitClient() (err error) {
@@ -63,4 +64,8 @@ func (bot *HttpBot) InitCookieHeader() {
 
 func (bot *HttpBot) SetSkipEmptyHeaders(skip bool) {
 	bot.skipEmptyHeaders = skip
+}
+
+func (bot *HttpBot) SetDebug(b bool) {
+	bot.isDebug = b
 }

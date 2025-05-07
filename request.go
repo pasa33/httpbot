@@ -30,10 +30,9 @@ func (bot *HttpBot) SendRequest(req *http.Request) (red *http.Response, err erro
 
 	res, err := bot.client.Do(req)
 	if err != nil {
-		err, parsed := parseRequestError(err)
-		if !parsed {
-			log.Printf("%+v", err)
-		}
+		err = parseRequestError(err, bot.isDebug)
+
+		bot.SwitchProxy(bot.proxy) //ricreo il transport
 	}
 
 	return res, err
@@ -74,24 +73,12 @@ func (bot *HttpBot) MakeRequestCustomOrder(method, url string, headers []Header,
 
 func (bot *HttpBot) MakeReturnRequest(method, url string, headers []Header, payload ...[]byte) (reqq *http.Request, ress *http.Response, err error) {
 
-	var body io.Reader = nil
-	if len(payload) > 0 && len(payload[0]) > 0 {
-		body = bytes.NewBuffer(payload[0])
-	}
-	req, err := http.NewRequest(method, url, body)
+	req, err := bot.PrepareRequest(method, url, headers, payload...)
 	if err != nil {
 		return req, nil, err
 	}
 
-	req.Header = bot.generateHeaders(headers)
-	res, err := bot.client.Do(req)
-	if err != nil {
-		err, parsed := parseRequestError(err)
-		if !parsed {
-			log.Printf("%+v", err)
-		}
-	}
-
+	res, err := bot.SendRequest(req)
 	return req, res, err
 }
 
@@ -118,16 +105,20 @@ func DecompressBody(res *http.Response) io.ReadCloser {
 	return http.DecompressBody(res)
 }
 
-func parseRequestError(err error) (error, bool) {
+func parseRequestError(err error, isDebug bool) error {
 	str := strings.ToLower(err.Error())
+
 	if strings.Contains(str, `client.timeout exceeded while awaiting headers`) {
-		return fmt.Errorf("timeout exceeded"), true
+		err = ErrRequestTimeOut
 	}
 
 	if strings.Contains(str, `proxy responded with non 200 code:`) {
 		code := strings.Split(str, "proxy responded with non 200 code:")[1]
-		return fmt.Errorf("proxy error: %s", code), true
+		err = fmt.Errorf("proxy %s", code)
 	}
 
-	return err, false
+	if isDebug {
+		log.Printf("%+v", err)
+	}
+	return ErrRequestSend
 }
