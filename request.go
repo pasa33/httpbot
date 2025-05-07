@@ -30,7 +30,11 @@ func (bot *HttpBot) SendRequest(req *http.Request) (red *http.Response, err erro
 
 	res, err := bot.client.Do(req)
 	if err != nil {
-		err = parseRequestError(err, bot.isDebug)
+		//err = parseRequestError(err, bot.isDebug)
+
+		if bot.isDebug {
+			log.Printf("[%s] %+v", bot.proxy, err)
+		}
 
 		bot.SwitchProxy(bot.proxy) //ricreo il transport
 	}
@@ -105,20 +109,20 @@ func DecompressBody(res *http.Response) io.ReadCloser {
 	return http.DecompressBody(res)
 }
 
-func parseRequestError(err error, isDebug bool) error {
-	str := strings.ToLower(err.Error())
+// func parseRequestError(err error, isDebug bool) error {
+// 	str := strings.ToLower(err.Error())
 
-	if strings.Contains(str, `client.timeout exceeded while awaiting headers`) {
-		err = ErrRequestTimeOut
-	}
+// 	// if strings.Contains(str, `client.timeout exceeded while awaiting headers`) {
+// 	// 	err = ErrRequestTimeOut
+// 	// }
 
-	if strings.Contains(str, `proxy responded with non 200 code:`) {
-		code := strings.Split(str, "proxy responded with non 200 code:")[1]
-		err = fmt.Errorf("proxy %s", code)
-	}
+// 	if strings.Contains(str, `proxy responded with non 200 code:`) {
+// 		code := strings.Split(str, "proxy responded with non 200 code:")[1]
+// 		err = fmt.Errorf("proxy %s", code)
+// 	}
 
-	if isDebug {
-		log.Printf("%+v", err)
-	}
-	return ErrRequestSend
-}
+// 	if isDebug {
+// 		log.Printf("%+v", err)
+// 	}
+// 	return err
+// }
