@@ -18,6 +18,9 @@ func (bot *HttpBot) PrepareRequest(method, url string, headers []Header, payload
 	}
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
+		if bot.isDebug {
+			log.Printf("[%s] %+v", bot.proxy, err)
+		}
 		return nil, err
 	}
 
@@ -30,13 +33,13 @@ func (bot *HttpBot) SendRequest(req *http.Request) (red *http.Response, err erro
 
 	res, err := bot.client.Do(req)
 	if err != nil {
-		//err = parseRequestError(err, bot.isDebug)
-
 		if bot.isDebug {
 			log.Printf("[%s] %+v", bot.proxy, err)
 		}
 
-		bot.SwitchProxy(bot.proxy) //ricreo il transport
+		if bot.proxy != "" {
+			bot.SwitchProxy(bot.proxy) //ricreo il transport
+		}
 	}
 
 	return res, err
