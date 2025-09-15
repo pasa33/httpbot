@@ -2,22 +2,30 @@ package httpbot
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 
 	"github.com/PuerkitoBio/goquery"
-	jsoniter "github.com/json-iterator/go"
+	"github.com/bytedance/sonic"
+	"github.com/valyala/bytebufferpool"
 )
 
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
+// var json = jsoniter.ConfigCompatibleWithStandardLibrary
+var bbPool bytebufferpool.Pool
 
 func Body2Json(r io.Reader, v interface{}) error {
-	bbody, err := io.ReadAll(r)
-	if err != nil {
+
+	bb := bbPool.Get()
+	defer bbPool.Put(bb)
+
+	if _, err := io.Copy(bb, r); err != nil {
 		return err
 	}
-	if err = json.Unmarshal(bbody, v); err != nil {
+
+	if err := sonic.Unmarshal(bb.Bytes(), &v); err != nil {
 		return err
 	}
+
 	return nil
 }
 

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	http "github.com/bogdanfinn/fhttp"
+	"github.com/bytedance/sonic"
 )
 
 func (bot *HttpBot) PrepareRequest(method, url string, headers []Header, payload ...[]byte) (reqq *http.Request, err error) {
@@ -87,7 +88,7 @@ func (bot *HttpBot) MakeReturnRequest(method, url string, headers []Header, payl
 }
 
 func EncodeJSON(j map[string]any) []byte {
-	jsonData, _ := json.Marshal(j)
+	jsonData, _ := sonic.Marshal(j)
 	return jsonData
 }
 
