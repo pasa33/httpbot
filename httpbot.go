@@ -9,16 +9,27 @@ import (
 )
 
 type HttpBot struct {
-	clientHello      profiles.ClientProfile
-	clientOptions    []tls_client.HttpClientOption
-	client           tls_client.HttpClient
-	CookieHeader     cookie_header.CookieHeader
-	proxy            string
-	devices          map[string]map[DeviceHeader]string
-	deviceMu         sync.RWMutex
-	useDeviceId      string
+	client        tls_client.HttpClient
+	clientHello   profiles.ClientProfile
+	clientOptions []tls_client.HttpClientOption
+	proxy         string
+	CookieHeader  cookie_header.CookieHeader
+	//devices
+	devices        map[string]HeaderList
+	selectedDevice HeaderList
+	deviceMu       sync.RWMutex
+	//flags
 	skipEmptyHeaders bool
 	isDebug          bool
+	isInited         bool
+}
+
+func New() *HttpBot {
+	return &HttpBot{
+		devices:        map[string]HeaderList{},
+		selectedDevice: HeaderList{},
+		isInited:       false,
+	}
 }
 
 func (bot *HttpBot) InitClient() (err error) {
@@ -26,38 +37,40 @@ func (bot *HttpBot) InitClient() (err error) {
 	options = append(options, tls_client.WithClientProfile(bot.clientHello))
 
 	bot.client, err = tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	if err == nil {
+		bot.isInited = true
+	}
 	return
 }
 
 func (bot *HttpBot) SetClientHello(ch profiles.ClientProfile) {
-	bot.clientHello = ch
-}
-
-func (bot *HttpBot) SwitchClientHello(ch profiles.ClientProfile) {
 	if ch.GetClientHelloStr() != bot.clientHello.GetClientHelloStr() {
-		bot.SetClientHello(ch)
+		return
+	}
+	bot.clientHello = ch
+	if bot.isInited {
 		bot.InitClient()
 	}
 }
 
 func (bot *HttpBot) SetClientOptions(options []tls_client.HttpClientOption) {
 	bot.clientOptions = options
-}
-
-// call before init client
-func (bot *HttpBot) InitProxy(proxyUrl string) {
-	if bot.proxy == "" {
-		bot.proxy = proxyUrl
+	if bot.isInited {
+		bot.InitClient()
 	}
 }
 
-// call when client already inuse
-func (bot *HttpBot) SwitchProxy(proxyUrl string) {
+// call for first time before client inuse
+func (bot *HttpBot) SetProxy(proxyUrl string) {
+	if bot.proxy == proxyUrl {
+		return
+	}
 	bot.proxy = proxyUrl
-	bot.client.SetProxy(bot.proxy)
+	if bot.isInited {
+		bot.client.SetProxy(bot.proxy)
+	}
 }
 
-// call when client already inuse
 func (bot *HttpBot) InitCookieHeader() {
 	bot.CookieHeader = cookie_header.New()
 }

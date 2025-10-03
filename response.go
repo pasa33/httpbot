@@ -2,7 +2,6 @@ package httpbot
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 
 	"github.com/PuerkitoBio/goquery"
@@ -10,10 +9,9 @@ import (
 	"github.com/valyala/bytebufferpool"
 )
 
-// var json = jsoniter.ConfigCompatibleWithStandardLibrary
 var bbPool bytebufferpool.Pool
 
-func Body2Json(r io.Reader, v interface{}) error {
+func Body2Json(r io.Reader, v any) error {
 
 	bb := bbPool.Get()
 	defer bbPool.Put(bb)
@@ -29,12 +27,12 @@ func Body2Json(r io.Reader, v interface{}) error {
 	return nil
 }
 
-func Body2JsonAndString(r io.Reader, v interface{}) (string, error) {
+func Body2JsonAndString(r io.Reader, v any) (string, error) {
 	bbody, err := io.ReadAll(r)
 	if err != nil {
 		return string(bbody), err
 	}
-	if err = json.Unmarshal(bbody, v); err != nil {
+	if err = sonic.Unmarshal(bbody, v); err != nil {
 		return string(bbody), err
 	}
 	return string(bbody), nil
@@ -48,8 +46,8 @@ func Body2String(r io.Reader) string {
 	return string(bbody)
 }
 
-func String2Json(s string, v interface{}) error {
-	if err := json.Unmarshal([]byte(s), v); err != nil {
+func String2Json(s string, v any) error {
+	if err := sonic.Unmarshal([]byte(s), v); err != nil {
 		return err
 	}
 	return nil

@@ -17,6 +17,7 @@ const (
 
 func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 	hds := make(map[string][]string)
+
 	for _, v := range headers {
 		if bot.skipEmptyHeaders && v.Value == "" {
 			continue
@@ -28,7 +29,7 @@ func (bot *HttpBot) generateHeaders(headers []Header) map[string][]string {
 			if isOnlyOrder(v.Key) {
 				continue
 			}
-			hds[v.Key] = []string{bot.getInUseDeviceValue(v.Key)}
+			hds[v.Key] = []string{bot.selectedDevice.getValue(newHeaderKey(v.Key))}
 		} else {
 			hds[v.Key] = []string{v.Value}
 		}

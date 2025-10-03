@@ -1,52 +1,68 @@
 package httpbot
 
 import (
+	"maps"
 	"strings"
+	"sync"
 )
 
-type DeviceHeader string
+var (
+	globalDevices  = make(map[string]HeaderList)
+	globalDeviceMu sync.RWMutex
+)
 
 const (
-	UserAgent            DeviceHeader = "user-agent"
-	SecUa                DeviceHeader = "sec-ch-ua"
-	SecUaMobile          DeviceHeader = "sec-ch-ua-mobile"
-	SecUaArch            DeviceHeader = "sec-ch-ua-arch"
-	SecUaFullVersion     DeviceHeader = "sec-ch-ua-full-version"
-	SecUaPlatformVersion DeviceHeader = "sec-ch-ua-platform-version"
-	SecUaFullVersionList DeviceHeader = "sec-ch-ua-full-version-list"
-	SecUaBitness         DeviceHeader = "sec-ch-ua-bitness"
-	SecUaModel           DeviceHeader = "sec-ch-ua-model"
-	SecUaPlatform        DeviceHeader = "sec-ch-ua-platform"
-	AcceptLanguage       DeviceHeader = "accept-language"
+	UserAgent            headerKey = "user-agent"
+	SecUa                headerKey = "sec-ch-ua"
+	SecUaMobile          headerKey = "sec-ch-ua-mobile"
+	SecUaArch            headerKey = "sec-ch-ua-arch"
+	SecUaFullVersion     headerKey = "sec-ch-ua-full-version"
+	SecUaPlatformVersion headerKey = "sec-ch-ua-platform-version"
+	SecUaFullVersionList headerKey = "sec-ch-ua-full-version-list"
+	SecUaBitness         headerKey = "sec-ch-ua-bitness"
+	SecUaModel           headerKey = "sec-ch-ua-model"
+	SecUaPlatform        headerKey = "sec-ch-ua-platform"
+	AcceptLanguage       headerKey = "accept-language"
 )
 
-func (bot *HttpBot) AddDevice(id string, headers map[DeviceHeader]string) {
-	bot.deviceMu.Lock()
-	defer bot.deviceMu.Unlock()
+type headerKey string
 
-	id = strings.ToLower(id)
-
-	if bot.devices == nil {
-		bot.devices = map[string]map[DeviceHeader]string{}
-	}
-
-	bot.devices[id] = headers
-	if len(bot.devices) == 1 {
-		bot.useDeviceId = id
-	}
+func newHeaderKey(s string) headerKey {
+	return headerKey(strings.ToLower(s))
 }
 
-func (bot *HttpBot) EditDevice(id string, headers map[DeviceHeader]string) {
+type HeaderList map[headerKey]string
+
+func (bot *HttpBot) AddDevice(id string, headers HeaderList) {
 	bot.deviceMu.Lock()
 	defer bot.deviceMu.Unlock()
 
 	id = strings.ToLower(id)
-	if _, ok := bot.devices[id]; !ok {
-		return
+
+	baseHeaders := maps.Clone(getGlobalDevice(id))
+	maps.Copy(baseHeaders, headers)
+
+	bot.devices[id] = baseHeaders
+	bot.selectedDevice = baseHeaders
+}
+
+func AddGlobalDevice(id string, headers HeaderList) {
+	globalDeviceMu.Lock()
+	defer globalDeviceMu.Unlock()
+
+	id = strings.ToLower(id)
+	globalDevices[id] = headers
+}
+
+func getGlobalDevice(id string) HeaderList {
+	globalDeviceMu.Lock()
+	defer globalDeviceMu.Unlock()
+
+	g, ok := globalDevices[id]
+	if !ok {
+		g = HeaderList{}
 	}
-	for k, v := range headers {
-		bot.devices[id][k] = v
-	}
+	return g
 }
 
 func (bot *HttpBot) UseDevice(id string) {
@@ -55,27 +71,10 @@ func (bot *HttpBot) UseDevice(id string) {
 
 	id = strings.ToLower(id)
 	if _, ok := bot.devices[id]; ok {
-		bot.useDeviceId = id
+		bot.selectedDevice = bot.devices[id]
 	}
 }
 
-func (bot *HttpBot) getInUseDeviceValue(key string) string {
-	bot.deviceMu.RLock()
-	defer bot.deviceMu.RUnlock()
-
-	if val, ok := bot.devices[bot.useDeviceId]; ok {
-		key = strings.ToLower(key)
-		return val[DeviceHeader(key)]
-	}
-	return ""
-}
-
-func (bot *HttpBot) GetInUseUA() string {
-	bot.deviceMu.RLock()
-	defer bot.deviceMu.RUnlock()
-
-	if val, ok := bot.devices[bot.useDeviceId]; ok {
-		return val[UserAgent]
-	}
-	return ""
+func (h HeaderList) getValue(key headerKey) string {
+	return h[key]
 }

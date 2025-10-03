@@ -39,7 +39,7 @@ func (bot *HttpBot) SendRequest(req *http.Request) (red *http.Response, err erro
 		}
 
 		if bot.proxy != "" {
-			bot.SwitchProxy(bot.proxy) //ricreo il transport
+			bot.SetProxy(bot.proxy) //ricreo il transport
 		}
 	}
 
@@ -112,21 +112,3 @@ func EncodeURLForm(j map[string]any) []byte {
 func DecompressBody(res *http.Response) io.ReadCloser {
 	return http.DecompressBody(res)
 }
-
-// func parseRequestError(err error, isDebug bool) error {
-// 	str := strings.ToLower(err.Error())
-
-// 	// if strings.Contains(str, `client.timeout exceeded while awaiting headers`) {
-// 	// 	err = ErrRequestTimeOut
-// 	// }
-
-// 	if strings.Contains(str, `proxy responded with non 200 code:`) {
-// 		code := strings.Split(str, "proxy responded with non 200 code:")[1]
-// 		err = fmt.Errorf("proxy %s", code)
-// 	}
-
-// 	if isDebug {
-// 		log.Printf("%+v", err)
-// 	}
-// 	return err
-// }
