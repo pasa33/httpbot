@@ -44,7 +44,7 @@ func (bot *HttpBot) InitClient() (err error) {
 }
 
 func (bot *HttpBot) SetClientHello(ch profiles.ClientProfile) {
-	if ch.GetClientHelloStr() != bot.clientHello.GetClientHelloStr() {
+	if ch.GetClientHelloStr() == bot.clientHello.GetClientHelloStr() {
 		return
 	}
 	bot.clientHello = ch
